@@ -38,3 +38,14 @@ pgconnect <- function(uri) {
   dplyr::src_postgres(host = parsed_uri$hostname, dbname = parsed_uri$path, port = parsed_uri$port,
                       user = parsed_uri$username, password = parsed_uri$password)
 }
+
+#' Read a heroku-style "env" file into a named character vector for use with system2
+read_env <- function(filepath) {
+  readr::read_delim(filepath, col_names = FALSE, delim = "=") %>%
+    mutate(X2 = stringr::str_replace_all(X2, "['\"]", "")) %$%
+    {
+      vals <- stringr::str_trim(X2)
+      names(vals) <- stringr::str_trim(X1)
+      vals
+    }
+}
